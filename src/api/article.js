@@ -1,6 +1,7 @@
 import request from '@/utils/request'
 
 export function fetchList(query) {
+  console.info('createArticle was called')
   return request({
     url: '/vue-element-admin/article/list',
     method: 'get',
@@ -9,6 +10,7 @@ export function fetchList(query) {
 }
 
 export function fetchArticle(id) {
+  console.info('createArticle was called')
   return request({
     url: '/vue-element-admin/article/detail',
     method: 'get',
@@ -17,6 +19,7 @@ export function fetchArticle(id) {
 }
 
 export function fetchPv(pv) {
+  console.info('createArticle was called')
   return request({
     url: '/vue-element-admin/article/pv',
     method: 'get',
@@ -25,6 +28,7 @@ export function fetchPv(pv) {
 }
 
 export function createArticle(data) {
+  console.info('createArticle was called')
   return request({
     url: '/vue-element-admin/article/create',
     method: 'post',

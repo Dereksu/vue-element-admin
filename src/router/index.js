@@ -1,16 +1,14 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-
-Vue.use(Router)
-
 /* Layout */
 import Layout from '@/layout'
-
 /* Router Modules */
 import componentsRouter from './modules/components'
 import chartsRouter from './modules/charts'
 import tableRouter from './modules/table'
 import nestedRouter from './modules/nested'
+
+Vue.use(Router)
 
 /**
  * Note: sub-menu only appear when route children.length >= 1
@@ -84,6 +82,18 @@ export const constantRoutes = [
     ]
   },
   {
+    path: '/diag',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/diag/gearbox-diag'),
+        name: 'diag',
+        meta: { title: '齿轮箱自动诊断', icon: 'example', affix: true }
+      }
+    ]
+  },
+  {
     path: '/documentation',
     component: Layout,
     children: [
@@ -91,7 +101,7 @@ export const constantRoutes = [
         path: 'index',
         component: () => import('@/views/documentation/index'),
         name: 'Documentation',
-        meta: { title: 'Documentation', icon: 'documentation', affix: true }
+        meta: { title: 'Documentation', icon: 'documentation' }
       }
     ]
   },
@@ -340,6 +350,7 @@ export const asyncRoutes = [
       }
     ]
   },
+
   {
     path: '/pdf/download',
     component: () => import('@/views/pdf/download'),
