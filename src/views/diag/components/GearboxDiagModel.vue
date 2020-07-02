@@ -10,24 +10,28 @@
           style="margin-left: 10px;"
           type="success"
           @click="submitForm"
-        >
-          诊断
+        > 诊断
         </el-button>
-        <el-button v-loading="loading" type="warning" @click="draftForm">清空数据</el-button>
       </sticky>
 
       <div class="createPost-main-container">
         <div class="postInfo-container">
           <el-row>
-            <el-col :span="12">
+            <el-col :span="8">
               <el-form-item label-width="120px" label="齿轮箱信息:" class="postInfo-container-item">
-                <el-input v-model="contentGearboxInfo" placeholder="11,22,33,44" readonly />
+                <span>{{ contentGearboxInfo }}</span>
               </el-form-item>
             </el-col>
 
-            <el-col :span="12">
+            <el-col :span="8">
               <el-form-item label-width="120px" label="采样频率(Hz):" class="postInfo-container-item">
-                <el-input v-model="postForm.sampling" placeholder="1024" readonly />
+                <span>{{ postForm.sampling }}</span>
+              </el-form-item>
+            </el-col>
+
+            <el-col :span="8">
+              <el-form-item label-width="120px" label=" 1x (Hz):" class="postInfo-container-item">
+                <span>{{ contentAccurate1x }}</span>
               </el-form-item>
             </el-col>
 
@@ -35,33 +39,145 @@
         </div>
       </div>
 
-      <el-row>
-        <el-col :span="8">
-          <spectrum-chart id="org4" height="400px" width="100%" />
-        </el-col>
-        <el-col :span="8">
-          <spectrum-chart
-            id="org5"
-            height="400px"
-            width="100%"
-          />
-        </el-col>
-        <el-col :span="8">
-          <spectrum-chart id="org6" height="400px" width="100%" />
-        </el-col>
-      </el-row>
-
     </el-form>
 
+    <el-row>
+      <el-col :span="8">
+        <chart-waveform
+          id="org1"
+          height="400px"
+          width="100%"
+          :chart-data="result.highFrequencyWaveform"
+        />
+      </el-col>
+      <el-col :span="8">
+        <chart-waveform
+          id="org2"
+          height="400px"
+          width="100%"
+          :chart-data="result.originWaveform"
+        />
+      </el-col>
+      <el-col :span="8">
+        <chart-waveform
+          id="org3"
+          height="400px"
+          width="100%"
+          :chart-data="result.lowFrequencyWaveform"
+        />
+      </el-col>
+    </el-row>
+
+    <el-row>
+      <el-col :span="8">
+        <chart-spectrum
+          id="org4"
+          height="400px"
+          width="100%"
+          :chart-data="result.highFrequencySpectrum"
+        />
+      </el-col>
+      <el-col :span="8">
+        <chart-spectrum
+          id="org5"
+          height="400px"
+          width="100%"
+          :chart-data="result.originSpectrum"
+        />
+      </el-col>
+      <el-col :span="8">
+        <chart-spectrum
+          id="org6"
+          height="400px"
+          width="100%"
+          :chart-data="result.lowFrequencySpectrum"
+        />
+      </el-col>
+    </el-row>
+    <sticky :z-index="10" :class-name="'sub-navbar '+postForm.status">
+      特征频率频谱
+    </sticky>
+    <el-table
+      :data="result.ratioSpectrums"
+      border
+      fit
+      highlight-current-row
+      style="width: 100%"
+    >
+      <el-table-column align="center" label="名称" width="80">
+        <template slot-scope="scope">
+          <span>{{ scope.row.ratio.name }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="值" width="100">
+        <template slot-scope="scope">
+          <span>{{ scope.row.ratio.value }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column width="800px" align="center" label="特征频率频谱图">
+        <template slot-scope="scope">
+          <chart-spectrum
+            :id="'rs_' + scope.$index"
+            height="200px"
+            width="100%"
+            :chart-data="scope.row"
+          />
+        </template>
+      </el-table-column>
+    </el-table>
+    <sticky :z-index="10" :class-name="'sub-navbar '+postForm.status">
+      冲击检测结果
+    </sticky>
+    <el-table
+      :data="result.impactResult"
+      border
+      fit
+      highlight-current-row
+      style="width: 100%"
+    >
+
+      <el-table-column width="80px" align="center" label="序号">
+        <template slot-scope="scope"> {{ scope.$index+1 }}</template>
+      </el-table-column>
+      <el-table-column align="center" label="ratioPosition" width="80">
+        <template slot-scope="scope">
+          <span>{{ scope.row.ratioPosition }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="factor" width="80">
+        <template slot-scope="scope">
+          <span>{{ scope.row.factor }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="r1" width="80">
+        <template slot-scope="scope">
+          <span>{{ scope.row.detail.r1 }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column align="center" label="faultInfo" width="380">
+        <template slot-scope="scope">
+          <span>{{ scope.row.detail.faultInfo }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column align="center" label="频谱图" width="80">
+        <template>
+          <span>显示</span>
+        </template>
+      </el-table-column>
+
+    </el-table>
   </div>
 </template>
 
 <script>
 import Sticky from '@/components/Sticky' // 粘性header组件
+import { ChartDataSpectrum, ChartDataWaveform } from '@/api/models'
 import { DiagGearbox } from '@/api/diag'
-import { fetchArticle } from '@/api/article'
-import { searchUser } from '@/api/remote-search'
-import SpectrumChart from '@/components/Charts/SpectrumChart'
+import ChartSpectrum from '@/components/Charts/ChartSpectrum'
+import ChartWaveform from '@/components/Charts/ChartWaveform'
 
 const localFile = {
   files: null
@@ -75,15 +191,39 @@ const defaultForm = {
 const analyseResult = {
   accurate1xInHz: 0.0,
   accurate1xOrder: 0,
-  originWaveform: {},
-  originSpectrum: {},
-  ratioSpectrums: []
+  originWaveform: {
+    title: 'empty',
+    waveform: {}
+  },
+  originSpectrum: {
+    title: 'empty',
+    spectrum: {}
+  },
+  highFrequencyWaveform: {
+    title: 'empty',
+    waveform: {}
+  },
+  highFrequencySpectrum: {
+    title: 'empty',
+    spectrum: {}
+  },
+  lowFrequencyWaveform: {
+    title: 'empty',
+    waveform: {}
+  },
+  lowFrequencySpectrum: {
+    title: 'empty',
+    spectrum: {}
+  },
+  ratioSpectrums: [],
+  impactResult: []
 }
 
 export default {
   name: 'GearboxDiagModel',
   components: {
-    SpectrumChart,
+    ChartWaveform,
+    ChartSpectrum,
     Sticky
   },
   props: {
@@ -119,63 +259,20 @@ export default {
     }
   },
   computed: {
-    contentShortLength() {
-      return this.postForm.content_short.length
-    },
     contentGearboxInfo() {
       return this.postForm.gearboxInfo.toString()
     },
-    displayTime: {
-      // set and get is useful when the data
-      // returned by the back end api is different from the front end
-      // back end return => "2013-06-25 06:59:25"
-      // front end need timestamp => 1372114765000
-      get() {
-        return (+new Date(this.postForm.display_time))
-      },
-      set(val) {
-        this.postForm.display_time = new Date(val)
-      }
+    contentAccurate1x() {
+      return this.result.accurate1xInHz + '@' + this.result.accurate1xOrder
     }
   },
   created() {
-    if (this.isEdit) {
-      const id = this.$route.params && this.$route.params.id
-      this.fetchData(id)
-    }
-
     // Why need to make a copy of this.$route here?
     // Because if you enter this page and quickly switch tag, may be in the execution of the setTagsViewTitle function, this.$route is no longer pointing to the current page
     // https://github.com/PanJiaChen/vue-element-admin/issues/1221
     this.tempRoute = Object.assign({}, this.$route)
   },
   methods: {
-    fetchData(id) {
-      fetchArticle(id).then(response => {
-        this.postForm = response.data
-
-        // just for test
-        this.postForm.title += `   Article Id:${this.postForm.id}`
-        this.postForm.content_short += `   Article Id:${this.postForm.id}`
-
-        // set tagsview title
-        this.setTagsViewTitle()
-
-        // set page title
-        this.setPageTitle()
-      }).catch(err => {
-        console.log(err)
-      })
-    },
-    setTagsViewTitle() {
-      const title = 'Edit Article'
-      const route = Object.assign({}, this.tempRoute, { title: `${title}-${this.postForm.id}` })
-      this.$store.dispatch('tagsView/updateVisitedView', route)
-    },
-    setPageTitle() {
-      const title = 'Edit Article'
-      document.title = `${title} - ${this.postForm.id}`
-    },
     submitForm() {
       console.log(this.postForm)
       this.$refs.postForm.validate(valid => {
@@ -190,18 +287,19 @@ export default {
           DiagGearbox(data).then(response => {
             console.log('finished')
             console.log(response)
-            // this.result = response.data
-            // this.result.originSpectrum.title = '原始频谱';
-            // this.result.originSpectrum.spectrum.
-            console.log(this.result)
 
-            // this.list.unshift(this.temp)
-            // this.dialogFormVisible = false
-            // this.$notify({
-            //   title: 'Success',
-            //   message: 'Created Successfully',
-            //   duration: 2000
-            // })
+            const data1 = response.data
+            this.result.originWaveform = new ChartDataWaveform('原始波形', data1['originWaveform'])
+            this.result.originSpectrum = new ChartDataSpectrum('原始频谱', data1['originSpectrum'])
+            this.result.highFrequencyWaveform = new ChartDataWaveform('高频波形', data1['highFrequencyWaveform'])
+            this.result.highFrequencySpectrum = new ChartDataSpectrum('高频频谱', data1['highFrequencySpectrum'])
+            this.result.lowFrequencyWaveform = new ChartDataWaveform('低频波形', data1['lowFrequencyWaveform'])
+            this.result.lowFrequencySpectrum = new ChartDataSpectrum('低频频谱', data1['lowFrequencySpectrum'])
+            this.result.ratioSpectrums = data1['ratioSpectrums']
+            this.result.impactResult = data1['impactResult']
+            this.result.accurate1xInHz = data1['accurate1xInHz']
+            this.result.accurate1xOrder = data1['accurate1xOrder']
+            console.log(this.result)
           })
 
           this.postForm.status = 'published'
@@ -212,29 +310,7 @@ export default {
         }
       })
     },
-    draftForm() {
-      if (this.postForm.content.length === 0 || this.postForm.title.length === 0) {
-        this.$message({
-          message: '请填写必要的标题和内容',
-          type: 'warning'
-        })
-        return
-      }
-      this.$message({
-        message: '保存成功',
-        type: 'success',
-        showClose: true,
-        duration: 1000
-      })
-      this.postForm.status = 'draft'
-    },
-    getRemoteUserList(query) {
-      searchUser(query).then(response => {
-        if (!response.data.items) return
-        this.userListOptions = response.data.items.map(v => v.name)
-      })
-    },
-    // 导入设备，监听上传文件并读取
+    // 读取本地文件到内存中，预备上传执行诊断
     readFile(evt) {
       if (evt.target.files.length < 1) {
         return
