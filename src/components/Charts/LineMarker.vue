@@ -148,7 +148,6 @@ export default {
               color: 'rgb(137,189,27)',
               borderColor: 'rgba(137,189,2,0.27)',
               borderWidth: 12
-
             }
           },
           data: [220, 182, 191, 134, 150, 120, 110, 125, 145, 122, 165, 122]
