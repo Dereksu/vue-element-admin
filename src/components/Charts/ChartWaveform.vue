@@ -1,5 +1,5 @@
 <template>
-  <div :id="id" :class="className" :style="{height:height,width:width}" />
+  <div :id="id" :class="className" :style="{height:height,width:width}"/>
 </template>
 
 <script>
@@ -36,14 +36,23 @@ export default {
     }
   },
   watch: {
-    chartData: function(val) {
+    chartData: function (val) {
+      const wfm = val.waveform
+      const count = wfm.count
+      const delta = wfm.delta
+      const x = new Array(count)
+      for (let i = 0; i < count; i++) {
+        x[i] = (i + 1) * delta
+      }
       this.chart.setOption({
         title: {
           text: this.chartData.title
         },
+        xAxis: [{
+          data: x
+        }],
         series: [{
-          name: 'CTCC2',
-          data: val.waveform.y
+          data: wfm.y
         }]
       })
     }
@@ -80,6 +89,10 @@ export default {
             lineStyle: {
               color: '#57617B'
             }
+          },
+          formatter: function (params) {
+            let v = params[0]
+            return parseFloat(v['axisValue']).toFixed(6) + ' ms<br />' + v['value'].toFixed(4)
           }
         },
         grid: {
@@ -101,7 +114,7 @@ export default {
         }],
         yAxis: [{
           type: 'value',
-          name: '(%)',
+          name: '',
           axisTick: {
             show: false
           },
@@ -132,19 +145,6 @@ export default {
           lineStyle: {
             normal: {
               width: 1
-            }
-          },
-          areaStyle: {
-            normal: {
-              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
-                offset: 0,
-                color: 'rgba(0, 136, 212, 0.3)'
-              }, {
-                offset: 0.8,
-                color: 'rgba(0, 136, 212, 0)'
-              }], false),
-              shadowColor: 'rgba(0, 0, 0, 0.1)',
-              shadowBlur: 10
             }
           },
           itemStyle: {

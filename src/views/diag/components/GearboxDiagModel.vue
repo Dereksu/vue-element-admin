@@ -275,9 +275,6 @@ export default {
           }
           console.info(data)
           DiagGearbox(data).then(response => {
-            console.log('finished')
-            console.log(response)
-
             const data1 = response.data
             this.result.ratioSpectrums = data1['ratioSpectrums']
             this.result.impactResult = data1['impactResult']
@@ -291,8 +288,6 @@ export default {
             this.result.highFrequencySpectrum = new ChartDataSpectrum('高频频谱', data1['highFrequencySpectrum'])
             this.result.lowFrequencyWaveform = new ChartDataWaveform('低频波形', data1['lowFrequencyWaveform'])
             this.result.lowFrequencySpectrum = new ChartDataSpectrum('低频频谱', data1['lowFrequencySpectrum'])
-
-            console.log(this.result)
           })
 
           this.postForm.status = 'published'

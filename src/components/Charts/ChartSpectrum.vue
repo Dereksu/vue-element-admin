@@ -58,8 +58,6 @@ export default {
       if (val.ratio !== undefined) {
         const ratio = val.ratio
 
-        console.info(title)
-        console.info(title !== undefined)
         if (title === undefined) {
           title = ratio.description
         }
@@ -70,12 +68,20 @@ export default {
         title = title + ' Percentage=' + (Math.pow(spec.rms / this.totalOverall, 2) * 100).toFixed(2) + '%'
       }
 
+      const lines = val.spectrum.lines
+      const delta = val.spectrum.delta
+      const x = new Array(lines)
+      for (let i = 0; i < lines; i++) {
+        x[i] = (i + 1) * delta
+      }
       this.chart.setOption({
         title: {
           text: title
         },
+        xAxis: [{
+          data: x
+        }],
         series: [{
-          name: 'CTCC2',
           data: spec.y
         }]
       })
@@ -113,6 +119,14 @@ export default {
             lineStyle: {
               color: '#57617B'
             }
+          },
+          formatter: function (params) {
+            let v = params[0]
+            if (v['value'] !== 0) {
+              console.info(v['dataIndex'] + ',' + v['data'] + ',' + v['value'])
+              return v['axisValue'] + ' Hz<br />' + v['value'].toFixed(4)
+            }
+            return '' // params[0]['axisValue'] + ' Hz<br />' + ticket.toFixed(4)
           }
         },
         grid: {
@@ -134,7 +148,7 @@ export default {
         }],
         yAxis: [{
           type: 'value',
-          name: '(%)',
+          name: '',
           axisTick: {
             show: false
           },
@@ -156,7 +170,6 @@ export default {
           }
         }],
         series: [{
-          name: 'CTCC',
           type: 'line',
           smooth: false,
           symbol: 'circle',
@@ -171,15 +184,7 @@ export default {
             normal: {
               color: 'rgb(0,136,212)',
               borderColor: 'rgba(0,136,212,0.2)',
-              borderWidth: 12,
-              label: {
-                show: true,
-                position: 'top',
-                formatter(p) {
-                  console.info(p)
-                  return p.value > 0 ? p.value : ''
-                }
-              }
+              borderWidth: 12
             }
           },
           data: []
