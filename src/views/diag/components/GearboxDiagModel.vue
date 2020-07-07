@@ -41,7 +41,8 @@
     <!--    <ratio-spectrum-chart :chart-data="result.ratioSpectrums" height="400px" width="100%"/>-->
 
     <!-- Impact Result -->
-    <sticky :z-index="10" :class-name="'sub-navbar '+postForm.status">
+    <sticky :z-index="10" style="text-align:center; color:#ffffff"
+            :class-name="'sub-navbar '+postForm.status">
       冲击检测结果
     </sticky>
     <el-table :data="result.impactResult"
@@ -59,6 +60,11 @@
       <el-table-column align="center" label="特征阶次">
         <template slot-scope="scope">
           <span>{{result.gearboxInfo.ratioInfoList[scope.row.ratioPosition-1].value.toFixed(4) }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="注意">
+        <template slot-scope="scope">
+          <i v-if="scope.row.detail.hit" class="el-icon-s-flag" style="color:red"/>
         </template>
       </el-table-column>
 
@@ -103,36 +109,37 @@
 
     <!-- Six Charts-->
     <el-row>
-      <el-col :span="8">
+      <el-col :span="8" style="padding: 4px">
         <chart-waveform id="org3" height="400px" width="100%"
                         :chart-data="result.lowFrequencyWaveform"/>
       </el-col>
-      <el-col :span="8">
+      <el-col :span="8" style="padding: 4px">
         <chart-waveform id="org2" height="400px" width="100%"
                         :chart-data="result.originWaveform"/>
       </el-col>
-      <el-col :span="8">
+      <el-col :span="8" style="padding: 4px">
         <chart-waveform id="org1" height="400px" width="100%"
                         :chart-data="result.highFrequencyWaveform"/>
       </el-col>
     </el-row>
     <el-row>
-      <el-col :span="8">
+      <el-col :span="8" style="padding: 4px">
         <chart-spectrum id="org6" height="400px" width="100%"
                         :chart-data="result.lowFrequencySpectrum"/>
       </el-col>
-      <el-col :span="8">
+      <el-col :span="8" style="padding: 4px">
         <chart-spectrum id="org5" height="400px" width="100%"
                         :chart-data="result.originSpectrum"/>
       </el-col>
-      <el-col :span="8">
+      <el-col :span="8" style="padding: 4px">
         <chart-spectrum id="org4" height="400px" width="100%"
                         :chart-data="result.highFrequencySpectrum"/>
       </el-col>
     </el-row>
 
     <!-- 拆分的频谱图 -->
-    <sticky :z-index="10" :class-name="'sub-navbar '+postForm.status">
+    <sticky :z-index="10" style="text-align:center; color:#ffffff"
+            :class-name="'sub-navbar '+postForm.status">
       特征频率频谱
     </sticky>
     <el-table :data="result.ratioSpectrums" border fit highlight-current-row style="width: 100%">
@@ -174,7 +181,8 @@ const localFile = {
 const defaultForm = {
   gearboxInfo: [],
   sampling: 5120,
-  y: []
+  y: [],
+  rpm: 0
 }
 const analyseResult = {
   gearboxInfo: {},  // 齿轮箱信息
@@ -271,7 +279,8 @@ export default {
           const data = {
             gearboxInfo: this.postForm.gearboxInfo,
             sampling: this.postForm.sampling,
-            y: this.postForm.y
+            y: this.postForm.y,
+            rpm: this.postForm.rpm
           }
           console.info(data)
           DiagGearbox(data).then(response => {
@@ -320,6 +329,7 @@ export default {
         this.postForm.gearboxInfo = obj['gearboxInfo']
         this.postForm.sampling = obj['sampling']
         this.postForm.y = obj['y']
+        this.postForm.rpm = obj['rpm']
       }
       reader.readAsText(file)
     }
@@ -346,22 +356,6 @@ export default {
         }
       }
     }
-
-    .word-counter {
-      width: 40px;
-      position: absolute;
-      right: 10px;
-      top: 0px;
-    }
   }
 
-  .article-textarea /deep/ {
-    textarea {
-      padding-right: 40px;
-      resize: none;
-      border: none;
-      border-radius: 0px;
-      border-bottom: 1px solid #bfcbd9;
-    }
-  }
 </style>

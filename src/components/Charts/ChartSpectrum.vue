@@ -1,5 +1,5 @@
 <template>
-  <div :id="id" :class="className" :style="{height:height,width:width}"/>
+  <div :id="id" :class="className" :style="{height:height,width:width,margin:margin}"/>
 </template>
 
 <script>
@@ -24,6 +24,10 @@ export default {
     height: {
       type: String,
       default: '200px'
+    },
+    margin: {
+      type: String,
+      default: '2px'
     },
     // 列的数量。支持多列显示，对比显示
     columns: {
@@ -102,16 +106,16 @@ export default {
       this.chart = echarts.init(document.getElementById(this.id))
 
       this.chart.setOption({
-        backgroundColor: '#394056',
+        backgroundColor: '#eeeeeeff',
         title: {
-          top: 20,
+          top: 10,
+          left: '20%',
           text: this.chartData.title,
           textStyle: {
             fontWeight: 'normal',
-            fontSize: 16,
-            color: '#F1F1F3'
-          },
-          left: '1%'
+            fontSize: 14,
+            color: '#909399FF'
+          }
         },
         tooltip: {
           trigger: 'axis',
@@ -130,10 +134,10 @@ export default {
           }
         },
         grid: {
-          top: 100,
+          top: 40,
           left: '2%',
           right: '2%',
-          bottom: '2%',
+          bottom: 40,
           containLabel: true
         },
         xAxis: [{
@@ -177,18 +181,21 @@ export default {
           showSymbol: true,
           lineStyle: {
             normal: {
-              width: 1
+              width: 0.5
             }
           },
           itemStyle: {
             normal: {
               color: 'rgb(0,136,212)',
-              borderColor: 'rgba(0,136,212,0.2)',
-              borderWidth: 12
             }
           },
           data: []
-        }]
+        }],
+        dataZoom: {
+          type: 'slider',
+          show: true
+        }
+
       })
     }
 

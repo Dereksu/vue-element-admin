@@ -72,14 +72,14 @@ export default {
       this.chart = echarts.init(document.getElementById(this.id))
 
       this.chart.setOption({
-        backgroundColor: '#394056',
+        backgroundColor: '#eeeeeeff',
         title: {
           top: 20,
           text: this.chartData.title,
           textStyle: {
             fontWeight: 'normal',
             fontSize: 16,
-            color: '#F1F1F3'
+            color: '#909399FF'
           },
           left: '1%'
         },
@@ -144,7 +144,7 @@ export default {
           showSymbol: false,
           lineStyle: {
             normal: {
-              width: 1
+              width: 0.5
             }
           },
           itemStyle: {
